@@ -8,9 +8,14 @@ const TabIcons = ({focused, icon, title}:{
     icon: any
     title: string
 })=>{
-    <View>
-        <Image source={icon}/>
+    return (
+    <View className='flex-1 mt-3 flex flex-col items-center'>
+        <Image source={icon} tintColor={focused? '#0061ff' : '#666876'} resizeMode='contain' className='size-6'/>
+        <Text className={`${focused? 'text-blue-600 font-rubik-medium': 'text-black font-rubik'} text-xs w-full text-center mt-1`}>
+            {title}
+        </Text>
     </View>
+    );
 }
 
 const TabsLayout = () => {
@@ -35,6 +40,27 @@ const TabsLayout = () => {
             )
         }}
       />
+      <Tabs.Screen 
+        name='explore'
+        options={{
+            title: 'Explore',
+            headerShown: false,
+            tabBarIcon: ({focused}) => (
+            <TabIcons focused={focused} icon={icons.search} title='Explore'/>
+            )
+        }}
+      />
+      <Tabs.Screen 
+        name='profile'
+        options={{
+            title: 'Search',
+            headerShown: false,
+            tabBarIcon: ({focused}) => (
+            <TabIcons focused={focused} icon={icons.person} title='Profile'/>
+            )
+        }}
+      />
+
     </Tabs>
   )
 }

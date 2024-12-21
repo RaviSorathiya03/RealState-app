@@ -2,6 +2,8 @@ import { Platform } from "react-native";
 import { Account, Avatars, Client, OAuthProvider } from 'react-native-appwrite';
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
+import { openAuthSessionAsync } from 'expo-web-browser';
+
 
 export const config = {
     plateform: 'com.jsm_restate',
@@ -21,37 +23,35 @@ export const account = new Account(client);
 
 export async function login() {
     try {
-        const redirectUri = Linking.createURL('/');
-        const authUrl = await account.createOAuth2Session(
-            OAuthProvider.Google,
-            redirectUri
-        );
-
-        if (!authUrl) throw new Error('Failed to generate OAuth URL');
-
-        // Ensure the URL is a string
-        const formattedUrl = typeof authUrl === 'string' ? authUrl : authUrl.href;
-
-        const browserResult = await WebBrowser.openAuthSessionAsync(formattedUrl, redirectUri);
-
-        if (browserResult.type !== 'success') throw new Error('Login failed');
-
-        const url = new URL(browserResult.url);
-        const secret = url.searchParams.get('secret')?.toString();
-        const userId = url.searchParams.get('userId')?.toString();
-
-        if (!secret || !userId) throw new Error('Failed to retrieve user session');
-
-        const session = await account.createSession(userId, secret);
-
-        if (!session) throw new Error('Session creation failed');
-
-        return true;
+      const redirectUri = Linking.createURL("/");
+  
+      const response = await account.createOAuth2Token(
+        OAuthProvider.Google,
+        redirectUri
+      );
+      if (!response) throw new Error("Create OAuth2 token failed");
+  
+      const browserResult = await openAuthSessionAsync(
+        response.toString(),
+        redirectUri
+      );
+      if (browserResult.type !== "success")
+        throw new Error("Create OAuth2 token failed");
+  
+      const url = new URL(browserResult.url);
+      const secret = url.searchParams.get("secret")?.toString();
+      const userId = url.searchParams.get("userId")?.toString();
+      if (!secret || !userId) throw new Error("Create OAuth2 token failed");
+  
+      const session = await account.createSession(userId, secret);
+      if (!session) throw new Error("Failed to create session");
+  
+      return true;
     } catch (error) {
-        console.log(error);
-        return false;
+      console.error(error);
+      return false;
     }
-}
+  }
 
 export async function logout() {
     try {

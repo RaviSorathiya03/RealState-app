@@ -4,7 +4,7 @@ import { ActivityIndicator, SafeAreaView } from "react-native";
 
 export default function AppLayout(){
     const {loading, isLoggedIn} = useGlobalContext();
-    if(true){
+    if(loading){
         return (
             <SafeAreaView className="bg-white h-full flex-1 justify-center items-center">
                 <ActivityIndicator className="text-blue-300" size={'large'}/>
